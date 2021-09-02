@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useReducer, useContext } from 'react';
+import React, {
+	useState,
+	useEffect,
+	useReducer,
+	useContext,
+	useRef,
+} from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 import AuthContext from '../../Context/auth-context';
+import FormInput from '../UI/FormInput/FormInput';
 
 const emailReducer = (state, action) => {
 	if (action.type === 'USER_INPUT') {
@@ -43,6 +50,9 @@ const Login = (props) => {
 	});
 
 	const authCtx = useContext(AuthContext);
+
+	const emailInputRef = useRef();
+	const passwordInputRef = useRef();
 
 	useEffect(() => {
 		console.log('RUNNING EFFECT');
@@ -95,46 +105,41 @@ const Login = (props) => {
 
 	const submitHandler = (event) => {
 		event.preventDefault();
-		authCtx.onLogin(emailState.value, passwordState.value);
+		if (formIsValid) {
+			authCtx.onLogin(emailState.value, passwordState.value);
+		} else if (!emailIsValid) {
+			emailInputRef.current.focus();
+		} else {
+			passwordInputRef.current.focus();
+		}
 	};
 
 	return (
 		<Card className={classes.login}>
 			<form onSubmit={submitHandler}>
-				<div
-					className={`${classes.control} ${
-						emailState.isValid === false ? classes.invalid : ''
-					}`}
-				>
-					<label htmlFor="email">E-Mail</label>
-					<input
-						type="email"
-						id="email"
-						value={emailState.value}
-						onChange={emailChangeHandler}
-						onBlur={validateEmailHandler}
-					/>
-				</div>
-				<div
-					className={`${classes.control} ${
-						passwordState.isValid === false ? classes.invalid : ''
-					}`}
-				>
-					<label htmlFor="password">Password</label>
-					<input
-						type="password"
-						id="password"
-						value={passwordState.value}
-						onChange={passwordChangeHandler}
-						onBlur={validatePasswordHandler}
-					/>
-				</div>
+				<FormInput
+					ref={emailInputRef}
+					type="email"
+					id="email"
+					label="E-mail"
+					value={emailState.value}
+					onChange={emailChangeHandler}
+					onBlur={validateEmailHandler}
+					isValid={emailIsValid}
+				/>
+				<FormInput
+					ref={passwordInputRef}
+					type="password"
+					id="password"
+					label="Password"
+					value={passwordState.value}
+					onChange={passwordChangeHandler}
+					onBlur={validatePasswordHandler}
+					isValid={passwordIsValid}
+				/>
+
 				<div className={classes.actions}>
-					<Button
-						type="submit"
-						className={classes.btn}
-						disabled={!formIsValid}
-					>
+					<Button type="submit" className={classes.btn}>
 						Login
 					</Button>
 				</div>
