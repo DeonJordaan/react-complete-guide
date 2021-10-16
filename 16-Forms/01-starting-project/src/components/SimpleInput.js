@@ -1,37 +1,49 @@
-import { useState } from 'react';
+import useInput from '../hooks/use-input';
 
 const SimpleInput = (props) => {
-	const [enteredName, setEnteredName] = useState('');
-	const [enteredNameTouched, setEnteredNameTouched] = useState(false);
+	const {
+		value: enteredName,
+		isValid: enteredNameIsValid,
+		hasError: nameInputHasError,
+		valueChangeHandler: nameChangedHandler,
+		inputBlurHandler: nameBlurHanlder,
+		reset: resetNameInput,
+	} = useInput((value) => value.trim() !== '');
 
-	const enteredNameIsValid = enteredName.trim() !== '';
-	const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
+	const {
+		value: enteredEmail,
+		isValid: enteredEmailIsValid,
+		hasError: emailInputHasError,
+		valueChangeHandler: emailChangedHandler,
+		inputBlurHandler: emailBlurHanlder,
+		reset: resetEmailInput,
+	} = useInput((value) => value.includes('@'));
 
-	const nameInputChangeHandler = (event) => {
-		setEnteredName(event.target.value);
-	};
+	//NOTE Checking overall form validity the simpler way
+	let formIsValid = false;
 
-	const nameInputBlur = (event) => {
-		setEnteredNameTouched(true);
-	};
+	if (enteredNameIsValid && enteredEmailIsValid) {
+		formIsValid = true;
+	}
 
+	//NOTE Form Submission Handling
 	const formSubmissionHandler = (event) => {
 		event.preventDefault();
 
-		setEnteredNameTouched(true);
-
-		if (!enteredNameIsValid) {
+		if (!enteredNameIsValid || !enteredEmailIsValid) {
 			return;
 		}
 
-		console.log(enteredName);
+		resetNameInput();
 
-		// nameInputRef.current.value = '' // NOTE MANUAL; DOM MANIPULATION = BAD PRACTICE
-		setEnteredName('');
-		setEnteredNameTouched(false);
+		resetEmailInput();
 	};
 
-	const nameInputClasses = nameInputIsInvalid
+	const nameInputClasses = nameInputHasError
+		? 'form-control invalid'
+		: 'form-control';
+
+	const emailInputClasses = emailInputHasError
 		? 'form-control invalid'
 		: 'form-control';
 
@@ -42,20 +54,38 @@ const SimpleInput = (props) => {
 				<input
 					type="text"
 					id="name"
-					onChange={nameInputChangeHandler}
-					onBlur={nameInputBlur}
+					onChange={nameChangedHandler}
+					onBlur={nameBlurHanlder}
 					value={enteredName}
 				/>
-				{/* {!enteredNameIsValid ? <p>Name is not valid</p> : null} //I did this, which is not ideal. Better to follow the below example */}
-				{nameInputIsInvalid && (
+				{nameInputHasError && (
 					<p className="error-text"> Name is not valid</p>
 				)}
 			</div>
+			<div className={emailInputClasses}>
+				<label htmlFor="name">Your Email</label>
+				<input
+					type="email"
+					id="email"
+					onChange={emailChangedHandler}
+					onBlur={emailBlurHanlder}
+					value={enteredEmail}
+				/>
+				{emailInputHasError && (
+					<p className="error-text"> Email is not valid</p>
+				)}
+			</div>
 			<div className="form-actions">
-				<button>Submit</button>
+				<button disabled={!formIsValid}>Submit</button>
 			</div>
 		</form>
 	);
 };
 
 export default SimpleInput;
+
+//NOTE
+// {!enteredNameIsValid ? <p>Name is not valid</p> : null} //I did this, which is not ideal. Better to follow the below example
+
+///////////////
+// nameInputRef.current.value = '' // NOTE MANUAL; DOM MANIPULATION = BAD PRACTICE
