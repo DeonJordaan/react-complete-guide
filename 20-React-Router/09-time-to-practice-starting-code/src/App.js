@@ -1,10 +1,10 @@
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import Layout from './components/layout/Layout';
-import AllQuotes from './components/pages/AllQuotes';
-import QuoteDetail from './components/pages/QuoteDetail';
-import NewQuote from './components/pages/NewQuote';
-import NotFound from './components/pages/NotFound';
+import AllQuotes from './pages/AllQuotes';
+import QuoteDetail from './pages/QuoteDetail';
+import NewQuote from './pages/NewQuote';
+import NotFound from './pages/NotFound';
 
 function App() {
 	return (
