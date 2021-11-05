@@ -1,13 +1,13 @@
+import NewTodo from './components/NewTodo';
 import Todos from './components/Todos';
-import Todo from './models/todo';
+import TodosContextProvider from './store/todos-context';
 
 function App() {
-	const todos = [new Todo('Leer Reaksie'), new Todo('Leer TipeSkrif')];
-
 	return (
-		<div>
-			<Todos items={todos} />
-		</div>
+		<TodosContextProvider>
+			<NewTodo />
+			<Todos />
+		</TodosContextProvider>
 	);
 }
 
